@@ -1,0 +1,164 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Serverless Portfolio and Blog Platform (Go + SAM)
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 128
+    Architectures:
+      - x86_64
+
+Parameters:
+  StudentID:
+    Type: String
+    Default: parakram
+
+Resources:
+  PostsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub "${StudentID}-posts-table"
+      AttributeDefinitions:
+        - AttributeName: postId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: postId
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+
+  UserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: !Sub "${StudentID}-user-pool"
+      AutoVerifiedAttributes:
+        - email
+      UsernameAttributes:
+        - email
+
+  UserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: !Sub "${StudentID}-pool-client"
+      UserPoolId: !Ref UserPool
+      GenerateSecret: false
+      ExplicitAuthFlows:
+        - ALLOW_USER_SRP_AUTH
+        - ALLOW_REFRESH_TOKEN_AUTH
+        - ALLOW_USER_PASSWORD_AUTH
+        - ALLOW_ADMIN_USER_PASSWORD_AUTH
+
+  BlogApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub "${StudentID}-blog-api"
+      StageName: Prod
+      Cors:
+        AllowMethods: "'GET,POST,OPTIONS'"
+        AllowHeaders: "'Content-Type,Authorization'"
+        AllowOrigin: "'*'"
+      Auth:
+        AddDefaultAuthorizerToCorsPreflight: false
+        Authorizers:
+          CognitoAuth:
+            UserPoolArn: !GetAtt UserPool.Arn
+
+  GetPostsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${StudentID}-get-posts"
+      CodeUri: backend/
+      Handler: get_posts.lambda_handler
+      Runtime: python3.12
+      Role: arn:aws:iam::771194017176:role/LabRole
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref PostsTable
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /posts
+            Method: get
+            RestApiId: !Ref BlogApi
+
+  GetPostByIdFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${StudentID}-get-post-by-id"
+      CodeUri: backend/
+      Handler: get_post_by_id.lambda_handler
+      Runtime: python3.12
+      Role: arn:aws:iam::771194017176:role/LabRole
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref PostsTable
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /posts/{id}
+            Method: get
+            RestApiId: !Ref BlogApi
+
+  CreatePostFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${StudentID}-create-post"
+      CodeUri: backend/
+      Handler: create_post.lambda_handler
+      Runtime: python3.12
+      Role: arn:aws:iam::771194017176:role/LabRole
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref PostsTable
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /posts
+            Method: post
+            RestApiId: !Ref BlogApi
+            Auth:
+              Authorizer: CognitoAuth
+
+  FrontendBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${StudentID}-portfolio-bucket"
+      WebsiteConfiguration:
+        IndexDocument: index.html
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+
+  FrontendBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref FrontendBucket
+      PolicyDocument:
+        Statement:
+          - Sid: PublicReadGetObject
+            Effect: Allow
+            Principal: "*"
+            Action: s3:GetObject
+            Resource: !Sub "arn:aws:s3:::${StudentID}-portfolio-bucket/*"
+
+Outputs:
+  ApiUrl:
+    Description: API Gateway endpoint URL for posts
+    Value: !Sub "https://${BlogApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/posts"
+  UserPoolId:
+    Description: Cognito User Pool ID
+    Value: !Ref UserPool
+  UserPoolClientId:
+    Description: Cognito User Pool Client ID
+    Value: !Ref UserPoolClient
+  WebsiteURL:
+    Description: S3 Website URL
+    Value: !GetAtt FrontendBucket.WebsiteURL
+  TableName:
+    Description: DynamoDB table name
+    Value: !Ref PostsTable
