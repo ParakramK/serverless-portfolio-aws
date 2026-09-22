@@ -4,85 +4,373 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio & Blog | Student ID: Parakram Kharel</title>
+    <title>Parakram's Blog</title>
     <script
         src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.3.1/dist/amazon-cognito-identity.min.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
-            max-width: 800px;
-            line-height: 1.6;
+        * {
+            box-sizing: border-box;
+            margin: 0;
         }
 
+        body {
+            font-family: "Geist", Inter, -apple-system, "Segoe UI", Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #0a0a0a;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        /* Nav */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: #fafafa;
+            border-bottom: 1px solid #e5e5e5;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .brand {
+            font-weight: 600;
+            font-size: 15px;
+            letter-spacing: -0.01em;
+        }
+
+        .nav-right {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .auth-inline {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 16px;
+            height: 36px;
+            border: none;
+            border-radius: 18px;
+            font-size: 14px;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            transition: background .1s;
+        }
+
+        .btn-filled {
+            background: #0a0a0a;
+            color: #fafafa;
+        }
+
+        .btn-filled:hover {
+            background: #171717;
+        }
+
+        .btn-secondary {
+            background: #0a0a0a;
+            color: #fafafa;
+        }
+
+        .btn-secondary:hover {
+            background: #262626;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: #0a0a0a;
+            border: 1px solid #e5e5e5;
+        }
+
+        .btn-ghost:hover {
+            background: #f5f5f5;
+        }
+
+        .btn-sm {
+            height: 32px;
+            padding: 0 12px;
+            font-size: 13px;
+        }
+
+        /* Inputs */
+        input[type="email"],
+        input[type="password"],
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 8px 12px;
+            background: #f5f5f5;
+            border: none;
+            border-radius: 18px;
+            font-size: 14px;
+            font-family: inherit;
+            color: #0a0a0a;
+            outline: none;
+            transition: box-shadow .15s;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #737373;
+        }
+
+        input:focus,
+        textarea:focus {
+            box-shadow: 0 0 0 1px #e5e5e5;
+            background: #fff;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+            border-radius: 12px;
+            padding: 12px;
+        }
+
+        .auth-msg {
+            font-size: 13px;
+            color: #737373;
+            white-space: nowrap;
+        }
+
+        /* Header */
         header {
-            border-bottom: 2px solid #333;
-            padding-bottom: 10px;
+            background: #fafafa;
+            border-bottom: 1px solid #e5e5e5;
+            padding: 48px 24px 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 36px;
+            font-weight: 600;
+            letter-spacing: -0.025em;
+            line-height: 1.11;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            color: #737373;
+            margin: 4px 0;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #f5f5f5;
+            color: #0a0a0a;
+            padding: 4px 12px;
+            border-radius: 18px;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid #e5e5e5;
+            margin-bottom: 16px;
+            letter-spacing: 0.02em;
+        }
+
+        /* Main */
+        main {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 32px 24px 80px;
+        }
+
+        /* Cards / Panels */
+        .panel {
+            background: #fff;
+            border: 1px solid #e5e5e5;
+            border-radius: 24px;
+            padding: 24px;
             margin-bottom: 20px;
+            box-shadow: 0 0 0 1px rgba(23, 23, 23, .04), 0 1px 2px rgba(0, 0, 0, .06);
+        }
+
+        h2 {
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            margin-bottom: 16px;
+        }
+
+        /* Post cards */
+        #posts-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
         .card {
-            border: 1px solid #ddd;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 5px;
-            background: #f9f9f9;
+            background: #fff;
+            border: 1px solid #e5e5e5;
+            border-radius: 24px;
+            padding: 20px;
+            box-shadow: 0 0 0 1px rgba(23, 23, 23, .04), 0 1px 2px rgba(0, 0, 0, .06);
+        }
+
+        .card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .card p {
+            color: #404040;
+            white-space: pre-wrap;
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .card small {
+            color: #737373;
+            font-size: 13px;
+        }
+
+        .card .btn {
+            margin-top: 8px;
+        }
+
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar input {
+            max-width: 240px;
+            margin: 0;
+        }
+
+        .skeleton {
+            height: 80px;
+            border-radius: 24px;
+            background: #f5f5f5;
+            border: 1px solid #e5e5e5;
         }
 
         .hidden {
             display: none;
         }
 
-        input,
-        textarea {
-            margin-bottom: 10px;
-            width: 100%;
-            padding: 8px;
-            box-sizing: border-box;
+        /* Footer */
+        footer {
+            text-align: center;
+            color: #737373;
+            padding: 24px;
+            font-size: 13px;
+            border-top: 1px solid #e5e5e5;
         }
 
-        button {
-            padding: 10px 15px;
-            background: #0066cc;
-            color: #fff;
-            border: none;
-            cursor: pointer;
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-size: 13px;
         }
 
-        button:hover {
-            background: #004499;
+        @media (max-width: 640px) {
+            header h1 {
+                font-size: 28px;
+            }
+
+            nav {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .auth-inline {
+                flex-wrap: wrap;
+            }
+
+            .auth-inline input {
+                width: 140px;
+            }
         }
     </style>
 </head>
 
 <body>
+    <nav>
+        <div class="brand">Parakram<span style="color:#737373">.blog</span></div>
+        <div class="nav-right">
+            <button class="btn btn-secondary btn-sm" onclick="toggleLogin()" id="login-toggle-btn">Login</button>
+            <div id="login-form" class="hidden">
+                <div class="auth-inline">
+                    <input type="email" id="email" placeholder="Email" style="width:160px">
+                    <input type="password" id="password" placeholder="Password" style="width:140px">
+                    <button class="btn btn-filled btn-sm" onclick="login()">Go</button>
+                    <span id="auth-status" class="auth-msg"></span>
+                </div>
+            </div>
+        </div>
+    </nav>
 
     <header>
-        <h1>Portfolio & Serverless Blog</h1>
-        <p><strong>Student ID:</strong> Parakram Kharel</p>
+        <span class="tag">AWS Serverless &bull; SAM &bull; DynamoDB &bull; Cognito</span>
+        <h1>Parakram Kharel's Blog</h1>
+        <p>Public reads, Cognito-protected writes.</p>
     </header>
 
-    <section id="auth">
-        <h2>Admin Authentication</h2>
-        <input type="email" id="email" placeholder="Email Address">
-        <input type="password" id="password" placeholder="Password">
-        <button onclick="login()">Login</button>
-        <p id="auth-status"></p>
-    </section>
+    <main>
+        <section id="create-post-sec" class="hidden panel">
+            <h2>New Post</h2>
+            <input type="text" id="title" placeholder="Title">
+            <textarea id="content" placeholder="Write something..."></textarea>
+            <button class="btn btn-filled" onclick="createPost()">Publish</button>
+        </section>
 
-    <section id="create-post-sec" class="hidden">
-        <h2>Create Blog Post</h2>
-        <input type="text" id="title" placeholder="Post Title">
-        <textarea id="content" placeholder="Post Content"></textarea>
-        <button onclick="createPost()">Publish Post</button>
-    </section>
+        <section class="panel">
+            <h2>Blog Posts</h2>
+            <div class="toolbar">
+                <input type="text" id="search" placeholder="Search..." oninput="filterPosts(this.value)">
+                <button class="btn btn-ghost btn-sm" onclick="fetchPosts()">Reload</button>
+            </div>
+            <div id="posts-container">
+                <div class="skeleton"></div>
+                <div class="skeleton"></div>
+                <div class="skeleton"></div>
+            </div>
+        </section>
+    </main>
 
-    <section>
-        <h2>Public Blog Posts</h2>
-        <div id="posts-container">Loading posts...</div>
-    </section>
+    <footer>Deployed via S3 &bull; API Gateway + Lambda</footer>
 
-    <script src="app.js"></script>
+    <script>
+        function toggleLogin() {
+            const form = document.getElementById("login-form");
+            const btn = document.getElementById("login-toggle-btn");
+            if (form.classList.contains("hidden")) {
+                form.classList.remove("hidden");
+                btn.textContent = "Cancel";
+                document.getElementById("email").focus();
+            } else {
+                form.classList.add("hidden");
+                btn.textContent = "Login";
+                document.getElementById("auth-status").textContent = "";
+            }
+        }
+
+        function filterPosts(q) {
+            q = (q || "").toLowerCase();
+            document.querySelectorAll("#posts-container .card").forEach(c => {
+                c.style.display = c.innerText.toLowerCase().includes(q) ? "" : "none";
+            });
+        }
+    </script>
+    <script src="main.js"></script>
 </body>
 
 </html>

@@ -1,0 +1,6 @@
+{
+  "API_URL": "https://n22s5zbxk3.execute-api.us-east-1.amazonaws.com/Prod/posts",
+  "USER_POOL_ID": "us-east-1_0p5TcWQCD",
+  "CLIENT_ID": "4tvhea8dkocqbmva2j5hv7cnm6",
+  "COGNITO_ENDPOINT": "https://cognito-idp.us-east-1.amazonaws.com"
+}
