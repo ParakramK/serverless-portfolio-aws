@@ -47,6 +47,13 @@ A serverless portfolio and blog platform built with AWS Lambda, API Gateway, Dyn
                                     └─────────────────────────────────────┘
 ```
 
+## 🏗️ Architecture Demo
+
+![Serverless Portfolio Architecture](https://i.ibb.co/6RPtmyRM/serverless-portfolio-blog.gif)
+
+
+
+
 ### Data Flow
 
 | Action | Endpoint | Auth | Lambda | DynamoDB |
