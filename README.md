@@ -151,7 +151,7 @@ aws cognito-idp admin-create-user --user-pool-id <pool> --username you@example.c
   --user-attributes Name=email,Value=you@example.com --message-action SUPPRESS \
   --region us-east-1 --profile lab
 aws cognito-idp admin-set-user-password --user-pool-id <pool> --username you@example.com \
-  --password 'Temp123!' --permanent --region us-east-1 --profile lab
+  --password 'PASSWORD_HERE' --permanent --region us-east-1 --profile lab
 
 # Open site
 open http://parakra-portfolio-bucket.s3-website-us-east-1.amazonaws.com
